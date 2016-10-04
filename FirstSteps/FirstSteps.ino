@@ -36,14 +36,22 @@ void loop()
 {
 	digitalWrite(ledPin, HIGH);
 	byteGPS=Serial.read();         // Read a byte of the serial port
-	if (byteGPS == -1) {           // See if the port is empty yet
-	 delay(100); 
-	} else {
+  Serial.println("Recibido: ");
+  Serial.print((char)byteGPS, HEX);
+	if (byteGPS == -1)
+	{
+	  // See if the port is empty yet
+	  delay(1000); 
+	}
+	else
+	{
 	 // note: there is a potential buffer overflow here!
 	 linea[conta]=byteGPS;        // If there is serial port data, it is put in the buffer
 	 conta++;                      
-	 Serial.print(byteGPS, BYTE); 
-	 if (byteGPS==13){            // If the received byte is = to 13, end of transmission
+	 Serial.print((char)byteGPS); 
+	 if (byteGPS==13)
+	 {
+	   // If the received byte is = to 13, end of transmission
 	   // note: the actual end of transmission is <CR><LF> (i.e. 0x13 0x10)
 	   digitalWrite(ledPin, LOW); 
 	   cont=0;
@@ -51,11 +59,13 @@ void loop()
 	   // The following for loop starts at 1, because this code is clowny and the first byte is the <LF> (0x10) from the previous transmission.
 	   for( int i = 1; i < 7; i++ )
 	   {
-		 // Verifies if the received command starts with $GPR
-		 if (linea[i]==comandoGPR[i-1]){
-		   bien++;
-		 }
+	    // Verifies if the received command starts with $GPR
+      if (linea[i]==comandoGPR[i-1])
+      {
+        bien++;
+      }
 	   }
+     
 	   if(bien==6){               // If yes, continue and process the data
 		 for (int i=0;i<300;i++){
 		   if (linea[i]==','){    // check for the position of the  "," separator
