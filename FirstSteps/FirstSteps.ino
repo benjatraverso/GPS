@@ -36,8 +36,9 @@ void loop()
 {
 	digitalWrite(ledPin, HIGH);
 	byteGPS=Serial.read();         // Read a byte of the serial port
-  Serial.println("Recibido: ");
-  Serial.print((char)byteGPS, HEX);
+	Serial.println("Recibido: ");
+	Serial.print((char)byteGPS, HEX);
+	
 	if (byteGPS == -1)
 	{
 	  // See if the port is empty yet
@@ -59,7 +60,7 @@ void loop()
 	   // The following for loop starts at 1, because this code is clowny and the first byte is the <LF> (0x10) from the previous transmission.
 	   for( int i = 1; i < 7; i++ )
 	   {
-	    // Verifies if the received command starts with $GPR
+	    // Verifies if the received command starts with $GPRMC
       if (linea[i]==comandoGPR[i-1])
       {
         bien++;
