@@ -47,3 +47,37 @@ Block n°  Example    Description
 full block Example:
 "$GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W*70"
 ********************************************/
+
+//////////////////////////////ATMEGA 320 USED PINS///////////////////////////////////
+//
+//                               +-----___-----+
+//                               | °           |
+//                         RESET | 1        28 | AI5 (SCL)   Left for I2C
+//                               |             |
+//                           RXD | 2        27 | AI4 (SDA)   Left for I2C
+//                               |             |
+//                           TXD | 3        26 | AI3         
+//                               |             |
+// ForwardGear          INT0 PD2 | 4        25 | AI2         
+//                               |             |
+//                      INT1 PD3 | 5        24 | AI1         
+//                               |             |
+//                           PD4 | 6        23 | AI0         
+//                               |             |
+//                           VCC | 7        22 | GND
+//                               |             |
+//                           GND | 8        21 | AREF
+//                               |             |
+//                         XTAL1 | 9        20 | AVCC
+//                               |             |
+// BackwardsGear           XTAL2 | 10       19 | DP13        
+//                               |             |
+//                     (PWM) DP5 | 11       18 | DP12        ObjectSensorTRIG 
+//                               |             |
+//                     (PWM) DP6 | 12       17 | DP11 (PWM)  ObjectSensorECHO
+//                               |             |
+//                           DP7 | 13       16 | DP10 (PWM)  
+//                               |             |
+//                           DP8 | 14       15 | DP9 (PWM)   Servo
+//                               |             |
+//                               +-------------+
