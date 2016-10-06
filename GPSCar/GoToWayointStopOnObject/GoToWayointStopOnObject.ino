@@ -8,6 +8,7 @@ void setup()
   
   Serial.begin( 9600 );  // Initialize serial: 
   myservo.attach( SRV );
+  state = eWaitingForWaypoint;
 }
 
 void loop()
@@ -16,6 +17,33 @@ void loop()
   DoStep();
   GetNextStep();
 }
+
+void GetNextStep( void )
+{
+  switch(state)
+  {
+    /*
+    case StepName:
+    {
+      state = eNextStateName;
+      break;
+    }
+    */
+    case eWaitingForWaypoint:
+    {
+      if( gValidWaypoint )
+      {
+        state = eCalculateRoute;
+      }
+      else
+      {
+        state = eWaitingForWaypoint;
+      }
+      break;
+    }
+  }
+}
+
 
 void DoStep( void )
 {
@@ -33,35 +61,14 @@ void DoStep( void )
       Step_WaitingForWaypoint();
       break;
     }
-  }
-}
-
-void GetNextStep( void )
-{
-  switch(state)
-  {
-    /*
-    case StepName:
+    case eCalculateRoute:
     {
-      Step_StepName();
-      break;
-    }
-    */
-    case eWaitingForWaypoint:
-    {
-      if(ValidWaypoint)
-      {
-        state = eCalculateRoute;
-      }
-      else
-      {
-        state = eWaitingForWaypoint;
-      }
+      Step_CalculateRoute();
       break;
     }
   }
 }
-  /*
+  /*OLD CODE
   if( Serial.available() > 0 )
   {
     char cReading = Serial.read();
