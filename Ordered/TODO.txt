@@ -1,0 +1,13 @@
+Arduino + GPS
+- Get data block from GPS
+- Print data in correct types on serial monitor
+
+Arduino (SLV) + Arduino (MSR) with I2C handshake
+- Turn Led on/off on master depending on SLV's pushbutton's state
+
+Arduino (MSR) + Arduino (SLV) + GPS
+- Print data blocks received from SLV through I2C bus to Serial Monitor
+
+Arduino (SLV) to board
+- Same as previous but with SLV in a board as standalone chip
+(atmega as a serial to I2C interface with GPS)
