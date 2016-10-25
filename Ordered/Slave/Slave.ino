@@ -6,6 +6,8 @@ void setup()
   Serial.begin(4800);
   // reserve 200 bytes for the inputString:
   gsGPSBuffer.reserve(200);
+  Wire.begin(SLAVE_ADDRESS);
+  Wire.onRequest(requestEvent);
 }
 
 void loop()
@@ -36,6 +38,7 @@ void loop()
     Serial.print("Min");
     Serial.println(gcLong);
   }
+
 }
 
 bool StoreData( void )
@@ -112,3 +115,12 @@ void serialEvent()
   }
 }
 
+void requestEvent()
+{
+  Wire.write(giLatDegrees);
+  Wire.write(gfLatMin);
+  Wire.write(gcLat);
+  Wire.write(giLongDegrees);
+  Wire.write(gfLongMin);
+  Wire.write(gcLong);
+}

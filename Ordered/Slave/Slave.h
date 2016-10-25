@@ -1,3 +1,4 @@
+#include <Wire.h>
 String gsGPSBuffer = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 int giOffsets[12];
@@ -18,6 +19,7 @@ const float WESTEST = 64;
 const float EASTEST = 54;
 const char  LONGITUDE_CHAR = 'W';
 
+const int SLAVE_ADDRESS = 8;
 
 int gi = 0;
 int giPos = 1;
