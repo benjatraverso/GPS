@@ -7,6 +7,7 @@ int giCheckSumPos;
 char gsOut[23];//SXXXX.XXXX,SYYYYY.YYYY //longitud is 5.4 and latitude 4.4
 String sCommand = "$GPRMC";
 bool gbNewData = false;
+bool bShow = true;
 
 ////////Control constants
 const float NORTHEST = 33;
@@ -21,15 +22,8 @@ const int SLAVE_ADDRESS = 8;
 int gi = 0;
 int giPos = 1;
 
-char gcLat;
-int giLatDeg = 0;
-int giLatMin = 0;
-int giLatSeg = 0;
-
-char gcLong;
-int giLongDeg = 0;
-int giLongMin = 0;
-int giLongSeg = 0;
+int gfLat = 0;
+int gfLon = 0;
 
       /***************PROTOCOL*******************
       GPS $GPRMC
