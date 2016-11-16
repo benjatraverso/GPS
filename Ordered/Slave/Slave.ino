@@ -1,11 +1,12 @@
-#include "UARTtoI2C.h"
+#include "Slave.h"
 
 void setup()
 {
   // initialize serial:
-  Serial.begin(4800);
+  Serial.begin(9600);
   // reserve 200 bytes for the inputString:
   gsGPSBuffer.reserve(200);
+  gsBlock.reserve(2*23);
   Wire.begin(SLAVE_ADDRESS);
   Wire.onRequest(requestEvent);
 }
@@ -15,62 +16,68 @@ void loop()
   // print the string when a newline arrives:
   if(stringComplete)
   {
+    //Serial.println(gsGPSBuffer);
     bool bValid = true;
-    bValid = ValidateBlock();
+    bValid = ValidateSentence();
+    bValid = bValid && ValidateBlock();
     bValid = bValid && StoreData();
     
     gsGPSBuffer = "";
     memset(giOffsets, 0, 12);//clear the offset's array
-    int gi = 0;
-    int giPos = 1;
+    gi = 0;
+    giPos = 1;
     stringComplete = false;
-    
-    Serial.print("Latitude: ");
-    Serial.print(giLatDegrees);
-    Serial.print("Deg");
-    Serial.print(gfLatMin);
-    Serial.print("Min");
-    Serial.println(gcLat);
-    Serial.print("Longitude: ");
-    Serial.print(giLongDegrees);
-    Serial.print("Deg");
-    Serial.print(gfLongMin);
-    Serial.print("Min");
-    Serial.println(gcLong);
   }
 
+  if(gbNewData && bShow)
+  {
+    Serial.print("Block: ");
+    //SXXXX.XX,SYYYYY.YY
+    Serial.println(gsBlock);
+    bShow = false;
+  }
 }
 
 bool StoreData( void )
 {
+  //       0         1 2       3 4        5 6   7   8      9   1011
+  //$GPRMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,ddmmyy,x.x,a*hh
   char cLat = gsGPSBuffer.charAt(giOffsets[3]);
-  int iLatDegrees = gsGPSBuffer.substring(giOffsets[2], giOffsets[2]+2).toInt();//first two numbers are the degrees
-  float fLatMin = gsGPSBuffer.substring(giOffsets[2]+2, giOffsets[3]-1).toFloat();//rest is minutes with decimals
-  
-  char cLong = gsGPSBuffer.charAt(giOffsets[5]);
-  int iLongDegrees = gsGPSBuffer.substring(giOffsets[4], giOffsets[4]+2).toInt();
-  float fLongMin = gsGPSBuffer.substring(giOffsets[4]+2, giOffsets[5]-1).toFloat();
+  String sLatDeg = gsGPSBuffer.substring(giOffsets[2], giOffsets[2]+2);//first two numbers are the degrees
+  int iLatDeg = sLatDeg.toInt();
+  String sLatMin = gsGPSBuffer.substring(giOffsets[2]+2, giOffsets[3]-1);//mins with decimals
+
+  char cLon = gsGPSBuffer.charAt(giOffsets[5]);
+  String sLonDeg = gsGPSBuffer.substring(giOffsets[4], giOffsets[4]+3);
+  int iLonDeg = LonDeg.toInt();
+  String sLonMin = gsGPSBuffer.substring(giOffsets[4]+3, giOffsets[5]-1);//mins with decimals
 
   bool bValid = true;
 
-  bValid = iLatDegrees > NORTHEST && iLatDegrees < SOUTHEST;
+  bValid = iLatDeg > NORTHEST && iLatDeg < SOUTHEST;
   bValid = bValid && cLat == LATITUDE_CHAR;
-  bValid = bValid && (iLongDegrees < WESTEST && iLongDegrees > EASTEST);
-  bValid = bValid && cLong == LONGITUDE_CHAR;
+  bValid = bValid && (iLonDeg < WESTEST && iLonDeg > EASTEST);
+  bValid = bValid && cLon == LONGITUDE_CHAR;
 
   if(bValid)
-  {    
-    gcLat = cLat;
-    giLatDegrees = iLatDegrees;
-    gfLatMin = fLatMin;
-    
-    gcLong = cLong;
-    giLongDegrees = iLongDegrees;
-    gfLongMin = fLongMin;
+  {
+    //DSXXXX.XX,SYYYYY.YY
+    gbNewData = true;
+    gsBlock = "";
+    gsBlock = (char)gbNewData;
+    gsBlock += cLat;
+    gsBlock += sLatDeg;
+    gsBlock += sLatMin;
+    gsBlock += ',';
+    gsBlock += cLon;
+    gsBlock += sLonDeg;
+    gsBlock += sLongMin;
+    gsBlock += '*'; //end of block
+    bShow = true;
   }
   else
   {
-    Serial.println("Data validation failed");
+    Serial.println("Data validation failed!");
     //ignore all readings...
   }
   
@@ -82,9 +89,16 @@ bool ValidateBlock( void )
   bool bValid = gsGPSBuffer.length() == gsGPSBuffer.substring(giCheckSumPos).toInt();
   if(!bValid)
   {
-    Serial.println("Checksum validation failed");
+    Serial.println("Checksum validation failed, ignoring...");
+    bValid = true;
   }
   return bValid;
+}
+
+bool ValidateSentence( void )
+{
+  //ignore other sentence different from $gprmc
+  return sCommand == gsGPSBuffer.substring(0, 6);
 }
 
 void serialEvent()
@@ -115,12 +129,12 @@ void serialEvent()
   }
 }
 
-void requestEvent()
+void requestEvent( void )
 {
-  Wire.write(giLatDegrees);
-  Wire.write(gfLatMin);
-  Wire.write(gcLat);
-  Wire.write(giLongDegrees);
-  Wire.write(gfLongMin);
-  Wire.write(gcLong);
+  Wire.write((char)gbNewData); //always indicate if we have new data
+  if(gbNewData)
+  {
+    Wire.write(gsBlock);
+    gbNewData = false;
+  }
 }
