@@ -49,7 +49,7 @@ bool StoreData( void )
 
   char cLon = gsGPSBuffer.charAt(giOffsets[5]);
   String sLonDeg = gsGPSBuffer.substring(giOffsets[4], giOffsets[4]+3);
-  int iLonDeg = LonDeg.toInt();
+  int iLonDeg = sLonDeg.toInt();
   String sLonMin = gsGPSBuffer.substring(giOffsets[4]+3, giOffsets[5]-1);//mins with decimals
 
   bool bValid = true;
@@ -71,7 +71,7 @@ bool StoreData( void )
     gsBlock += ',';
     gsBlock += cLon;
     gsBlock += sLonDeg;
-    gsBlock += sLongMin;
+    gsBlock += sLonMin;
     gsBlock += '*'; //end of block
     bShow = true;
   }
@@ -134,7 +134,7 @@ void requestEvent( void )
   Wire.write((char)gbNewData); //always indicate if we have new data
   if(gbNewData)
   {
-    Wire.write(gsBlock);
+    Wire.write(gsBlock.c_str());
     gbNewData = false;
   }
 }

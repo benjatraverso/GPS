@@ -21,7 +21,7 @@ const int SLAVE_ADDRESS = 8;
 int gi = 0;
 int giPos = 1;
 
-String gsBlock;//SXXXX.XXXX,SYYYYY.YYYY* //longitud is 5.4 and latitude 4.4
+String gsBlock = "";//SXXXX.XXXX,SYYYYY.YYYY* //longitud is 5.4 and latitude 4.4
 
 
 
