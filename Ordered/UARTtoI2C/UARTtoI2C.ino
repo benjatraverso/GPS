@@ -19,8 +19,8 @@ void loop()
     
     gsGPSBuffer = "";
     memset(giOffsets, 0, 12);//clear the offset's array
-    int gi = 0;
-    int giPos = 1;
+    gi = 0;
+    giPos = 1;
     stringComplete = false;
     
     Serial.print("Latitude: ");
@@ -40,16 +40,17 @@ void loop()
 
 bool StoreData( void )
 {
+  //int iSign = '-' == gsGPSBuffer.substring(giOffsets[2]) ) : 1 ? 0; //if has a sign, increment that position
   char cLat = gsGPSBuffer.charAt(giOffsets[3]);
   int iLatDegrees = gsGPSBuffer.substring(giOffsets[2], giOffsets[2]+2).toInt();//first two numbers are the degrees
   float fLatMin = gsGPSBuffer.substring(giOffsets[2]+2, giOffsets[3]-1).toFloat();//rest is minutes with decimals
   
+  //iSign = '-' == gsGPSBuffer.substring(giOffsets[5]) ) : 1 ? 0;//if has a sign, increment that position
   char cLong = gsGPSBuffer.charAt(giOffsets[5]);
   int iLongDegrees = gsGPSBuffer.substring(giOffsets[4], giOffsets[4]+2).toInt();
   float fLongMin = gsGPSBuffer.substring(giOffsets[4]+2, giOffsets[5]-1).toFloat();
 
   bool bValid = true;
-
   bValid = iLatDegrees > NORTHEST && iLatDegrees < SOUTHEST;
   bValid = bValid && cLat == LATITUDE_CHAR;
   bValid = bValid && (iLongDegrees < WESTEST && iLongDegrees > EASTEST);
