@@ -1,4 +1,5 @@
 #include <Wire.h>
+
 String gsGPSBuffer = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 int giOffsets[12];
@@ -21,7 +22,7 @@ const int SLAVE_ADDRESS = 8;
 int gi = 0;
 int giPos = 1;
 
-String gsBlock = "";//SXXXX.XXXX,SYYYYY.YYYY* //longitud is 5.4 and latitude 4.4
+String gsBlock = "";
 
 
 
@@ -49,18 +50,3 @@ Block n°  Example    Description
 full block Example:
 "$GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W*70"
 ********************************************/
-
-//////////////////////////////ATTINY USED PINS///////////////////////////////////
-//
-//                               +-----___-----+
-//                               | °           |
-//                         RESET | 1        28 | VCC
-//                               |             |
-//                        A3/RXD | 2        27 | SCL
-//                               |             |
-//                        A2/DP7 | 13       16 | DP1 (PWM)  
-//                               |             |
-//                           GND | 14       15 | SDA
-//                               |             |
-//                               +-------------+
-

@@ -2,8 +2,6 @@
 
 void setup()
 {
-  // initialize serial:
-  Serial.begin(9600);
   // reserve 200 bytes for the inputString:
   gsGPSBuffer.reserve(200);
   gsBlock.reserve(2*23);
@@ -31,9 +29,7 @@ void loop()
 
   if(gbNewData && bShow)
   {
-    Serial.print("Block: ");
     //SXXXX.XX,SYYYYY.YY
-    Serial.println(gsBlock);
     bShow = false;
   }
 }
@@ -77,7 +73,6 @@ bool StoreData( void )
   }
   else
   {
-    Serial.println("Data validation failed!");
     //ignore all readings...
   }
   
@@ -89,7 +84,7 @@ bool ValidateBlock( void )
   bool bValid = gsGPSBuffer.length() == gsGPSBuffer.substring(giCheckSumPos).toInt();
   if(!bValid)
   {
-    Serial.println("Checksum validation failed, ignoring...");
+    //ignore checksum validation for i don't know why it is not consistant in current gps module
     bValid = true;
   }
   return bValid;
