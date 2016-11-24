@@ -1,17 +1,22 @@
+-----------------------------------------------------------------------------------------
+Master receives coordinates from SERIAL
+Distance from current location to coordinates is printed in LCD
+-----------------------------------------------------------------------------------------
 Arduino + GPS (done)
 - Get data block from GPS
 - Print data in correct types on serial monitor
-
+-----------------------------------------------------------------------------------------
 Arduino (SLV) + Arduino (MSR) with I2C handshake (done)
 - Turn Led on/off on master depending on SLV's pushbutton's state
-
+-----------------------------------------------------------------------------------------
 Arduino + GPS (serialEvent example does this)
 - Print on serial monitor block as received from GPS and check
 if format is the one expected
-
-Arduino (MSR) + Arduino (SLV) + GPS
+-----------------------------------------------------------------------------------------
+Arduino (MSR) + Arduino (SLV) + GPS (Done)
 - Print data blocks received from SLV through I2C bus to Serial Monitor from master
-
-Arduino (SLV) to board
+-----------------------------------------------------------------------------------------
+Arduino (SLV) to board (Done)
 - Same as previous but with SLV in a board as standalone chip
 (atmega as a serial to I2C interface with GPS)
+-----------------------------------------------------------------------------------------
