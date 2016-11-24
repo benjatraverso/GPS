@@ -9,7 +9,7 @@ void setup()
 
 void loop()
 {
-  delay( 5000 );
+	;
 }
 
 bool RequestPosition( WAYPOINT &o_pos )
