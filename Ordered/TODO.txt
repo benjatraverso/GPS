@@ -1,22 +1,29 @@
 -----------------------------------------------------------------------------------------
-Master receives coordinates from SERIAL
-Distance from current location to coordinates is printed in LCD
+Branch: "Compass"
+Master adds answering where to turn to get to destination with degrees, like:
+"Distance to destination: 245.32 meters\n"
+"Objective right X degrees" or "Objective left X degrees"
 -----------------------------------------------------------------------------------------
-Arduino + GPS (done)
+Branch: "Distance"
+Master receives coordinates from SERIAL like "-34.152361,-58.121212\n"
+Distance from current location to coordinates is printed in Serial like:
+"Distance to destination: 245.32 meters\n"
+-----------------------------------------------------------------------------------------
+Arduino + GPS (DONE)
 - Get data block from GPS
 - Print data in correct types on serial monitor
 -----------------------------------------------------------------------------------------
-Arduino (SLV) + Arduino (MSR) with I2C handshake (done)
+Arduino (SLV) + Arduino (MSR) with I2C handshake (DONE)
 - Turn Led on/off on master depending on SLV's pushbutton's state
 -----------------------------------------------------------------------------------------
 Arduino + GPS (serialEvent example does this)
 - Print on serial monitor block as received from GPS and check
 if format is the one expected
 -----------------------------------------------------------------------------------------
-Arduino (MSR) + Arduino (SLV) + GPS (Done)
+Arduino (MSR) + Arduino (SLV) + GPS (DONE)
 - Print data blocks received from SLV through I2C bus to Serial Monitor from master
 -----------------------------------------------------------------------------------------
-Arduino (SLV) to board (Done)
+Arduino (SLV) to board (DONE)
 - Same as previous but with SLV in a board as standalone chip
 (atmega as a serial to I2C interface with GPS)
 -----------------------------------------------------------------------------------------
