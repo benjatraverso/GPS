@@ -15,3 +15,9 @@ struct WAYPOINT
 	float Lat;
 	float Lon;
 };
+
+struct ROUTE
+{
+	WAYPOINT value;
+	ROUTE* next;
+}
