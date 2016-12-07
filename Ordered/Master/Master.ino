@@ -9,7 +9,79 @@ void setup()
 
 void loop()
 {
-	;
+	WAYPOINT destination;
+	WAYPOINT myPosition;
+	destination.Lat = -34.520333;
+	destination.Lon = -58.502257;
+
+	While( !RequestPosition( &myPosition ) )
+	{
+		// if no position we cannot proceed
+		delay(500);// wait a little and request again
+	}
+
+	float distance = getDistance( myPosition, destination );
+	float destinationHeading = getDestHeading( myPosition, destination );
+	while( !getMyHeading( &myHeading ) )
+	{
+		// try again, we need to know where are we heading to
+		delay(500);
+	}
+
+	//TODO: compare headings and decide where to turn and move to position
+}
+
+bool getMyHeading( int &headingCompass )
+{
+	bool bValid = true;
+	String headingData = "";
+
+	Wire.beginTransmission(compassAddress);        //the wire stuff is for the compass module
+	Wire.send("A");
+	Wire.endTransmission();
+	delay(10);
+	Wire.requestFrom(compassAddress, 2);
+	i = 0;
+
+	while(Wire.available())
+	{
+		headingData += Wire.receive();
+	}
+	
+	int heading = headingData.parseInt();
+
+ 	int pracheading = headingValue / 10;      // this is the heading of the compass
+	if( pracheading > 0 )
+	{
+		headingCompass = pracheading;
+	}
+	else
+	{
+		bValid = false;
+	}
+
+	return bValid;
+}
+
+float getDestHeading(const WAYPOINT pos, const WAYPOINT dest)
+{
+	float heading = 0.0;
+
+	float pLon = radians(pos.Lon);
+ 	float dLon = radians(dest.Lon);
+ 	float dLat = radians(pos.Lat);
+ 	float pLat = radians(dest.Lat);
+
+ 	heading = atan2(sin(dLon-pLon)*cos(dLat),cos(pLat)*sin(dLat)-sin(pLat)*cos(dLat)*cos(dLon-pLon))*2;
+ 	// we need it in degrees so we son't multiply by π to then divide it by it
+ 	heading *= 180;// convert from radians to degrees
+
+ 	if( (int)heading < 0 )
+ 	{
+ 		heading += 360;//if the heading is negative then add 360 to make it positive
+ 	}
+
+	return heading;
 }
 
 bool RequestPosition( WAYPOINT &o_pos )
