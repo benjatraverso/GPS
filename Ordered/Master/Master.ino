@@ -9,58 +9,39 @@ void setup()
 
 void loop()
 {
-	WAYPOINT destination;
-	WAYPOINT myPosition;
-	destination.Lat = -34.520333;
-	destination.Lon = -58.502257;
-
-	While( !RequestPosition( &myPosition ) )
-	{
-		// if no position we cannot proceed
-		delay(500);// wait a little and request again
-	}
-
-	float distance = getDistance( myPosition, destination );
-	float destinationHeading = getDestHeading( myPosition, destination );
-	while( !getMyHeading( &myHeading ) )
-	{
-		// try again, we need to know where are we heading to
-		delay(500);
-	}
-
-	//TODO: compare headings and decide where to turn and move to position
+  WAYPOINT destination;
+  WAYPOINT myPosition;
+  destination.Lat = -34.520333;
+  destination.Lon = -58.502257;
+  gsBuffer = "";
+  
+  bool bValid = RequestPosition( myPosition );
+  
+  float distance = getDistance( myPosition, destination );
+  float destinationHeading = getDestHeading( myPosition, destination );
+  float myHeading;
+  bValid = getMyHeading( myHeading );
+  if(bValid)
+  {
+  Serial.print("Heading: ");
+  Serial.println(myHeading, 2);
+  }
+  delay(1000);
+  //TODO: compare headings and decide where to turn and move to position
 }
 
-bool getMyHeading( int &headingCompass )
+bool getMyHeading( float &headingCompass )
 {
-	bool bValid = true;
-	String headingData = "";
-
-	Wire.beginTransmission(compassAddress);        //the wire stuff is for the compass module
-	Wire.send("A");
-	Wire.endTransmission();
-	delay(10);
-	Wire.requestFrom(compassAddress, 2);
-	i = 0;
-
-	while(Wire.available())
-	{
-		headingData += Wire.receive();
-	}
-	
-	int heading = headingData.parseInt();
-
- 	int pracheading = headingValue / 10;      // this is the heading of the compass
-	if( pracheading > 0 )
-	{
-		headingCompass = pracheading;
-	}
-	else
-	{
-		bValid = false;
-	}
-
-	return bValid;
+  //000000000011111111112222222222333
+  //012345678901234567890123456789012
+  //DSAAAA.AAAAA,SOOOOO.OOOOO;DCCC.CC
+  bool bNewData = (bool)gsBuffer.charAt(26);
+  Serial.println(gsBuffer);
+  if( bNewData )
+  {
+    headingCompass = gsBuffer.substring(27, 32).toFloat();
+  }
+  return bNewData;
 }
 
 float getDestHeading(const WAYPOINT pos, const WAYPOINT dest)
@@ -102,9 +83,11 @@ bool RequestPosition( WAYPOINT &o_pos )
 			gsBuffer += (char)Wire.read();//read rest of the data
 		}
 
-		//0000000000111111111122222
-		//0123456789012345678901234
-		//DSAAAA.AAAAA,SOOOOO.OOOOO*
+   
+  Serial.println(gsBuffer);
+		//000000000011111111112222222222333
+		//012345678901234567890123456789012
+		//DSAAAA.AAAAA,SOOOOO.OOOOO;DCCC.CC
 		int   iLatDeg = gsBuffer.substring(2, 4).toInt();
 		float fLatMin = gsBuffer.substring(4, 12).toFloat();
 		int   iLonDeg = gsBuffer.substring(14, 17).toInt();

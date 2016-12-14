@@ -2,7 +2,7 @@
 #include<LiquidCrystal.h>
 
 const int SLAVE_ADDRESS = 8;
-const int DATA_LENGTH = sizeof("DSAAAA.AAAAA,SOOOOO.OOOOO*");
+const int DATA_LENGTH = sizeof("DSAAAA.AAAAA,SOOOOO.OOOOO;DCCC.CC");
 
 bool gbNewData = false;
 float gfLat;
@@ -20,4 +20,6 @@ struct ROUTE
 {
 	WAYPOINT value;
 	ROUTE* next;
-}
+};
+
+bool RequestPosition( WAYPOINT &o_myPosition );
