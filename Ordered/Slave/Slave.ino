@@ -41,20 +41,24 @@ bool StoreData( void )
   char cLat = gsGPSBuffer.charAt(giOffsets[3]);
   String sLatDeg = gsGPSBuffer.substring(giOffsets[2], giOffsets[2]+2);//first two numbers are the degrees
   int iLatDeg = sLatDeg.toInt();
+  if('S' == cLat)
+  {
+    iLat *= -1;
+  }
   String sLatMin = gsGPSBuffer.substring(giOffsets[2]+2, giOffsets[3]-1);//mins with decimals
 
   char cLon = gsGPSBuffer.charAt(giOffsets[5]);
   String sLonDeg = gsGPSBuffer.substring(giOffsets[4], giOffsets[4]+3);
   int iLonDeg = sLonDeg.toInt();
+  if('S' == cLon)
+  {
+    iLon *= -1;
+  }
   String sLonMin = gsGPSBuffer.substring(giOffsets[4]+3, giOffsets[5]-1);//mins with decimals
 
   bool bValid = true;
-
-  bValid = iLatDeg > NORTHEST && iLatDeg < SOUTHEST;
-  bValid = bValid && cLat == LATITUDE_CHAR;
-  bValid = bValid && (iLonDeg < WESTEST && iLonDeg > EASTEST);
-  bValid = bValid && cLon == LONGITUDE_CHAR;
-
+  bValid = CheckLimits(iLat, iLon);
+  
   if(bValid)
   {
     //DSXXXX.XX,SYYYYY.YY
@@ -76,6 +80,14 @@ bool StoreData( void )
     //ignore all readings...
   }
   
+  return bValid;
+}
+
+bool CheckLimits(int lat, int lon)
+{
+  //at least to have a minimun check if the gps data is not completely corrupted
+  bool bValid = lat < NORTHEST && lat > SOUTHEST;
+  bValid = bValid && (lon > WESTEST && lon < EASTEST);
   return bValid;
 }
 
