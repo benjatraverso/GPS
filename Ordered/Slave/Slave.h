@@ -1,4 +1,8 @@
 #include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_HMC5883_U.h>
+
+const int DATA_LENGTH = sizeof("DSAAAA.AAAAA,SOOOOO.OOOOO");
 
 String gsGPSBuffer = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
@@ -6,8 +10,8 @@ int giOffsets[12];
 int giCheckSumPos;
 
 String sCommand = "$GPRMC";
-bool gbNewData = false;
-bool bShow = true;
+bool gbNewGPSData = false;
+bool gbNewCompassData = false;
 
 ////////Control constants
 const float NORTHEST = 33;
@@ -23,8 +27,7 @@ int gi = 0;
 int giPos = 1;
 
 String gsBlock = "";
-
-
+String gsHeading = "";
 
 /***************PROTOCOL*******************
 GPS $GPRMC

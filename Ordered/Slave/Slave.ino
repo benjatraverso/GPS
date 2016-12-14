@@ -1,12 +1,16 @@
 #include "Slave.h"
 
+// Assign a unique ID to the sensor
+Adafruit_HMC5883_Unified goCompass = Adafruit_HMC5883_Unified(12345);
 void setup()
 {
-  // reserve 200 bytes for the inputString:
-  gsGPSBuffer.reserve(200);
-  gsBlock.reserve(2*23);
+  Serial.begin(9600);
+  // reserve 100 bytes for the inputString:
+  gsGPSBuffer.reserve(100);
+  gsBlock.reserve(DATA_LENGTH);
   Wire.begin(SLAVE_ADDRESS);
   Wire.onRequest(requestEvent);
+  //goCompass.begin();
 }
 
 void loop()
@@ -27,11 +31,44 @@ void loop()
     stringComplete = false;
   }
 
-  if(gbNewData && bShow)
+  gbNewCompassData = GetCompassData();
+}
+
+bool GetCompassData( void )
+{
+  bool bValid = true;
+  Serial.println("let's check compass...");
+  Serial.println("compass good...");
+  /* Get a new sensor event */ 
+  sensors_event_t event;
+  Serial.println("event instance...");
+  goCompass.getEvent(&event);
+  Serial.println("got event...");
+  // Calculate heading when the magnetometer is level, then correct for signs of axis.
+  float heading = atan2(event.magnetic.y, event.magnetic.x);
+
+  // Buenos aires declination is 8°47' (http://www.magnetic-declination.com/)
+  // We need that in radians
+  float declinationAngle = radians(8 + 47 / 60);
+  heading += declinationAngle;
+  
+  // Correct for when signs are reversed.
+  if(heading < 0)
   {
-    //SXXXX.XX,SYYYYY.YY
-    bShow = false;
+    heading += 2*PI;
   }
+    
+  // Check for wrap due to addition of declination.
+  if(heading > 2*PI)
+  {
+    heading -= 2*PI;
+  }
+
+  gsHeading = String(heading, 2);
+
+  Serial.print("Heading: ");
+  Serial.println(gsHeading);
+  return bValid;
 }
 
 bool StoreData( void )
@@ -40,7 +77,7 @@ bool StoreData( void )
   //$GPRMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,ddmmyy,x.x,a*hh
   char cLat = gsGPSBuffer.charAt(giOffsets[3]);
   String sLatDeg = gsGPSBuffer.substring(giOffsets[2], giOffsets[2]+2);//first two numbers are the degrees
-  int iLatDeg = sLatDeg.toInt();
+  int iLat = sLatDeg.toInt();
   if('S' == cLat)
   {
     iLat *= -1;
@@ -49,7 +86,7 @@ bool StoreData( void )
 
   char cLon = gsGPSBuffer.charAt(giOffsets[5]);
   String sLonDeg = gsGPSBuffer.substring(giOffsets[4], giOffsets[4]+3);
-  int iLonDeg = sLonDeg.toInt();
+  int iLon = sLonDeg.toInt();
   if('S' == cLon)
   {
     iLon *= -1;
@@ -62,9 +99,9 @@ bool StoreData( void )
   if(bValid)
   {
     //DSXXXX.XX,SYYYYY.YY
-    gbNewData = true;
+    gbNewGPSData = true;
     gsBlock = "";
-    gsBlock = (char)gbNewData;
+    gsBlock = (char)gbNewGPSData;
     gsBlock += cLat;
     gsBlock += sLatDeg;
     gsBlock += sLatMin;
@@ -73,7 +110,6 @@ bool StoreData( void )
     gsBlock += sLonDeg;
     gsBlock += sLonMin;
     gsBlock += '*'; //end of block
-    bShow = true;
   }
   else
   {
@@ -138,10 +174,16 @@ void serialEvent()
 
 void requestEvent( void )
 {
-  Wire.write((char)gbNewData); //always indicate if we have new data
-  if(gbNewData)
+  Wire.write( (char)gbNewGPSData ); //always indicate if we have new data
+  if( gbNewGPSData )
   {
     Wire.write(gsBlock.c_str());
-    gbNewData = false;
+    gbNewGPSData = false;
+  }
+  Wire.write( (char)gbNewGPSData ); //always indicate if we have new data
+  if( gbNewCompassData )
+  {
+    Wire.write(gsHeading.c_str());
+    gbNewCompassData = false;
   }
 }
