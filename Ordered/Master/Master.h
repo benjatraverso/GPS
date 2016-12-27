@@ -1,8 +1,9 @@
 #include<Wire.h>
-#include<LiquidCrystal.h>
+
+#define HMC5883_ADDRESS_MAG            (0x3C >> 1)
 
 const int SLAVE_ADDRESS = 8;
-const int DATA_LENGTH = sizeof("DSAAAA.AAAAA,SOOOOO.OOOOO;DCCC.CC");
+const int DATA_LENGTH = sizeof("DSAAAA.AAAAA,SOOOOO.OOOOODC.CC");
 
 bool gbNewData = false;
 float gfLat;
@@ -23,3 +24,4 @@ struct ROUTE
 };
 
 bool RequestPosition( WAYPOINT &o_myPosition );
+bool GetCompassData( float & o_fHeading );

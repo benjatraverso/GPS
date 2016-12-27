@@ -1,7 +1,5 @@
 #include "Slave.h"
 
-// Assign a unique ID to the sensor
-Adafruit_HMC5883_Unified goCompass = Adafruit_HMC5883_Unified(12345);
 void setup()
 {
   Serial.begin(9600);
@@ -15,11 +13,11 @@ void setup()
 
 void loop()
 {
+  bool bValid = true;
   // print the string when a newline arrives:
   if(stringComplete)
   {
     //Serial.println(gsGPSBuffer);
-    bool bValid = true;
     bValid = ValidateSentence();
     bValid = bValid && ValidateBlock();
     bValid = bValid && StoreData();
@@ -30,45 +28,6 @@ void loop()
     giPos = 1;
     stringComplete = false;
   }
-
-  gbNewCompassData = GetCompassData();
-}
-
-bool GetCompassData( void )
-{
-  bool bValid = true;
-  Serial.println("let's check compass...");
-  Serial.println("compass good...");
-  /* Get a new sensor event */ 
-  sensors_event_t event;
-  Serial.println("event instance...");
-  goCompass.getEvent(&event);
-  Serial.println("got event...");
-  // Calculate heading when the magnetometer is level, then correct for signs of axis.
-  float heading = atan2(event.magnetic.y, event.magnetic.x);
-
-  // Buenos aires declination is 8°47' (http://www.magnetic-declination.com/)
-  // We need that in radians
-  float declinationAngle = radians(8 + 47 / 60);
-  heading += declinationAngle;
-  
-  // Correct for when signs are reversed.
-  if(heading < 0)
-  {
-    heading += 2*PI;
-  }
-    
-  // Check for wrap due to addition of declination.
-  if(heading > 2*PI)
-  {
-    heading -= 2*PI;
-  }
-
-  gsHeading = String(heading, 2);
-
-  Serial.print("Heading: ");
-  Serial.println(gsHeading);
-  return bValid;
 }
 
 bool StoreData( void )
@@ -179,11 +138,5 @@ void requestEvent( void )
   {
     Wire.write(gsBlock.c_str());
     gbNewGPSData = false;
-  }
-  Wire.write( (char)gbNewGPSData ); //always indicate if we have new data
-  if( gbNewCompassData )
-  {
-    Wire.write(gsHeading.c_str());
-    gbNewCompassData = false;
   }
 }

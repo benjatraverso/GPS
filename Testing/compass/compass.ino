@@ -8,7 +8,7 @@ void setup() {
     pinMode(13, OUTPUT);
 }
 
-void loop() {
+void loop() {  
   Wire.beginTransmission((byte)HMC5883_ADDRESS_MAG);
   Wire.write((uint8_t)0x02);
   Wire.write((uint8_t)0x00);
@@ -60,6 +60,8 @@ void loop() {
     heading -= 2*PI;
   }
 
+  Serial.print("Float Heading: ");
+  Serial.println( heading * 100.0 );
   String gsHeading = String(heading, 2);
 
   Serial.print("Heading: ");

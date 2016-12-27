@@ -2,6 +2,8 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
 
+#define HMC5883_ADDRESS_MAG            (0x3C >> 1)
+
 const int DATA_LENGTH = sizeof("DSAAAA.AAAAA,SOOOOO.OOOOO");
 
 String gsGPSBuffer = "";         // a string to hold incoming data
